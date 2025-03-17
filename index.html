@@ -53,7 +53,7 @@
             canvas.height = image.height;
             ctx.drawImage(image, 0, 0);
 
-            // Perform segmentation
+            // Perform segmentation on the image
             const segmentation = await net.segmentPerson(image, {
                 flipHorizontal: false,
                 internalResolution: 'high',
@@ -67,8 +67,10 @@
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const maskData = mask.data;
             for (let i = 0; i < imageData.data.length; i += 4) {
-                // If the mask data indicates person (255), keep the pixel
-                if (maskData[i] === 0 && maskData[i + 1] === 0 && maskData[i + 2] === 0 && maskData[i + 3] === 0) {
+                // If the mask data indicates background (0), make the pixel transparent
+                if (maskData[i + 3] === 0) {
+                    imageData.data[i + 3] = 255; // Alpha channel to 255 (opaque)
+                } else {
                     imageData.data[i + 3] = 0; // Alpha channel to 0 (transparent)
                 }
             }
