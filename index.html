@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +10,18 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         canvas {
             border: 1px solid #000;
         }
+
         #download {
             display: none;
             margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
     <h1>Remove Background from Any Image</h1>
     <input type="file" id="upload" accept="image/*" />
@@ -63,7 +67,7 @@
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const maskData = mask.data;
             for (let i = 0; i < imageData.data.length; i += 4) {
-                // If the mask data indicates background (0), make the pixel transparent
+                // If the mask data indicates person (255), keep the pixel
                 if (maskData[i] === 0 && maskData[i + 1] === 0 && maskData[i + 2] === 0 && maskData[i + 3] === 0) {
                     imageData.data[i + 3] = 0; // Alpha channel to 0 (transparent)
                 }
@@ -97,4 +101,5 @@
         loadModel();
     </script>
 </body>
+
 </html>
