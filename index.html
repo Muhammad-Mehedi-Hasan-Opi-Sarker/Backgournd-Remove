@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,18 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         canvas {
             border: 1px solid #000;
-            display: none; /* Hide canvas initially */
         }
+
         #download {
-            display: none; /* Hide download button initially */
+            display: none;
             margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
     <h1>Remove Background from Any Image</h1>
     <input type="file" id="upload" accept="image/*" />
@@ -50,7 +53,7 @@
             canvas.height = image.height;
             ctx.drawImage(image, 0, 0);
 
-            // Perform segmentation
+            // Perform segmentation on the canvas
             const segmentation = await net.segmentPerson(canvas, {
                 segmentationThreshold: 0.7,
                 internalResolution: 'high',
@@ -77,13 +80,13 @@
         }
 
         // Handle file upload
-        document.getElementById('upload').addEventListener('change', function(event) {
+        document.getElementById('upload').addEventListener('change', function (event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const img = new Image();
-                    img.onload = function() {
+                    img.onload = function () {
                         removeBackground(img);
                     };
                     img.src = e.target.result;
@@ -96,4 +99,5 @@
         loadModel();
     </script>
 </body>
+
 </html>
