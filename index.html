@@ -53,35 +53,28 @@
             canvas.height = image.height;
             ctx.drawImage(image, 0, 0);
 
-            // Perform segmentation on the image
+            // Perform segmentation
             const segmentation = await net.segmentPerson(image, {
-                segmentationThreshold: 0.7,
+                flipHorizontal: false,
                 internalResolution: 'high',
+                segmentationThreshold: 0.7,
             });
 
             // Create a mask from segmentation
             const mask = bodyPix.toMask(segmentation);
-            const maskCanvas = document.createElement('canvas');
-            maskCanvas.width = mask.width;
-            maskCanvas.height = mask.height;
-            const maskCtx = maskCanvas.getContext('2d');
-            maskCtx.putImageData(new ImageData(new Uint8ClampedArray(mask.data), mask.width, mask.height), 0, 0);
 
-            // Draw the original image
-            ctx.drawImage(image, 0, 0);
-
-            // Draw the mask on top of the original image
-            const maskedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const maskData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-
-            for (let i = 0; i < maskedImageData.data.length; i += 4) {
-                if (maskData[i + 3] === 0) { // Background pixels
-                    maskedImageData.data[i + 3] = 0; // Set alpha to 0 (transparent)
+            // Apply mask to the original image
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const maskData = mask.data;
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                // If the mask data indicates background (0), make the pixel transparent
+                if (maskData[i + 3] === 0) {
+                    imageData.data[i + 3] = 0; // Alpha channel to 0 (transparent)
                 }
             }
 
             // Put the modified image back on the canvas
-            ctx.putImageData(maskedImageData, 0, 0);
+            ctx.putImageData(imageData, 0, 0);
 
             // Show download link
             downloadLink.href = canvas.toDataURL('image/png');
